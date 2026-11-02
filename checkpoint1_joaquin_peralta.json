@@ -1,0 +1,247 @@
+{
+  "name": "checkpoint 1 - triaje soporte",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "efcbad02-4f5e-4361-8c8b-9f65acc40de3",
+      "name": "When chat message received",
+      "webhookId": "bc4e0ebb-2e3c-4d1b-8830-9d34cb190005"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# ROL\nSos un asistente de Triaje de Soporte. Tu única función es clasificar\nlas consultas entrantes de los clientes y registrarlas para que el\nequipo humano les dé seguimiento.\n\n# ÁMBITO\nTrabajás exclusivamente con mensajes de soporte de clientes. Clasificás\ncada consulta en una de estas tres categorías:\n- TECNICO: problemas de uso, fallas, errores del producto o servicio.\n- FACTURACION: pagos, cobros, facturas, reembolsos, precios.\n- RECLAMO_URGENTE: clientes molestos, pedidos de cancelación, problemas\n  que requieren atención inmediata.\nAdemás asignás una prioridad: ALTA, MEDIA o BAJA.\n\n# OBJETIVO\nPor cada mensaje recibido debés: (1) identificar la categoría,\n(2) asignar la prioridad, (3) redactar un resumen breve (1 o 2 frases)\ndel problema, y (4) registrar el caso usando tu herramienta disponible.\n\n# REGLAS\n- Respondé siempre en español neutro, en tono profesional y claro.\n- No uses lenguaje inclusivo (nada de \"todes\", \"les clientes\", etc.);\n  usá el género gramatical estándar.\n- Si el mensaje no es una consulta de soporte, clasificalo como\n  fuera de ámbito y no lo registres.\n- Basá la categoría y prioridad solo en lo que dice el cliente; no\n  inventes datos que no estén en el mensaje.\n\n# ESCALAMIENTO\n- Todo caso clasificado como RECLAMO_URGENTE con prioridad ALTA debe\n  marcarse para revisión humana inmediata en el resumen.\n\n# LO QUE NO PODES HACER\n- No resolvés el problema del cliente ni le das soluciones técnicas.\n- No prometés reembolsos, plazos ni compensaciones.\n- No contactás a nadie por fuera de tu herramienta de registro.\n- No tomás ninguna acción que no sea clasificar y registrar.",
+          "maxIterations": 6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "86385671-3122-457b-9fb0-df7bbfdead6b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        224,
+        176
+      ],
+      "id": "a227b636-b0a3-4220-af7b-01e2e02c8c69",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Usá esta herramienta para registrar en la planilla de soporte cada\nconsulta de cliente que hayas clasificado. Debés activarla SIEMPRE que\nhayas determinado la categoría (TECNICO, FACTURACION o RECLAMO_URGENTE)\ny la prioridad (ALTA, MEDIA o BAJA) de un mensaje de soporte válido.\nRegistrá un caso escribiendo una fila con: la fecha y hora actual, la\ncategoría asignada, la prioridad asignada, tu resumen breve del problema,\ny el texto original del mensaje del cliente. NO uses esta herramienta si\nel mensaje no es una consulta de soporte o si quedó clasificado como\nfuera de ámbito.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HOlnBjw4_7-DA6X8hJNlch3994T2qe67XR13AWIGbEU",
+          "mode": "list",
+          "cachedResultName": "Triaje de Soporte",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HOlnBjw4_7-DA6X8hJNlch3994T2qe67XR13AWIGbEU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HOlnBjw4_7-DA6X8hJNlch3994T2qe67XR13AWIGbEU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $now }}",
+            "Categoria": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Categoria', ``, 'string') }}",
+            "Prioridad": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prioridad', ``, 'string') }}",
+            "Resumen": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Resumen', ``, 'string') }}",
+            "Mensaje_Original": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Mensaje_Original', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Prioridad",
+              "displayName": "Prioridad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resumen",
+              "displayName": "Resumen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mensaje_Original",
+              "displayName": "Mensaje_Original",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        208
+      ],
+      "id": "d41ad4f5-27c2-49ea-a0fd-1ce09244aa4a",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YnblqPmwM2q3eA4F",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "joacoperalta07@gmail.com",
+        "subject": "[Triaje Soporte] Nuevo caso registrado por el agente",
+        "emailType": "text",
+        "message": "=El agente de triaje procesó una consulta.  Resultado del agente: {{ $json.output }}  -- Reporte automático de observabilidad --",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "0e386e77-ff25-483a-b51f-ca9e78372f29",
+      "name": "Send a message",
+      "webhookId": "4bddcb2b-b16e-491d-9105-9632ce990703",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "DKeiogs1M6TZ3mWl",
+          "name": "CuentaNoticiasDeInversion"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "d7d42c94-d544-4c67-b683-4910f527b0d1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "19bd41fdeffb9b3082daf1dab83d621e5f8f5b4694a58e4b1654cffe46419c3e"
+  },
+  "nodeGroups": [],
+  "id": "8f22jsC5W2jCXzfW",
+  "tags": []
+}
