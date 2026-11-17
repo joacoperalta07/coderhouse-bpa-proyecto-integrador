@@ -1,6 +1,6 @@
 # Proyecto Integrador — Curso de Automatización con IA (Coderhouse)
 
-Repositorio del proyecto integrador del curso de Business Process Automation / Automatización con IA de Coderhouse (Comisión #96925).
+Repositorio del proyecto integrador del curso de Business Process Automation / Automatización con IA de Coderhouse (Comisión #97320).
 
 Este proyecto **crece módulo a módulo**: el flujo de n8n que vive acá es la base sobre la que se van sumando capas en cada checkpoint (memoria, integraciones, RAG, voz, etc.) hasta el Proyecto Final Integrador. No se rehace desde cero en cada instancia: se importa el `.json` anterior y se extiende.
 
