@@ -114,4 +114,27 @@ Se ejecutó el flujo manualmente (`Execute Workflow`) con el siguiente prompt de
 
 ---
 
+## Checkpoint 4 — Integraciones Avanzadas e Interconexión de Sistemas
+
+Partiendo del workflow del Módulo 3 (con memoria por `Session_ID`), el agente de triaje se conecta con **3 herramientas externas reales vía OAuth2** y suma controles preventivos no-code.
+
+### Integraciones (OAuth2)
+- **CRM:** HubSpot — alta/actualización de contactos.
+- **Casilla de correo:** Gmail — disparador de entrada y creación de borradores.
+- **Canal del equipo:** Slack — aviso al canal de soporte.
+
+![Credenciales OAuth2 activas](credentials.png)
+
+### Controles preventivos (guardrails)
+1. **IF anti auto-reply** — tras el trigger, descarta mails automáticos (Auto-reply, Out of office, Undeliverable, `no-reply@`) y corta el bucle infinito.
+2. **Look up antes de Create (HubSpot)** — busca el contacto por email antes de crear, evitando el Error 409 (duplicados).
+3. **Create Draft (Human-in-the-loop)** — la respuesta de la IA se guarda como borrador en Gmail; nunca se envía sin aprobación humana.
+4. **Set de limpieza de payload** — deja solo los campos necesarios y valida el email (evita el Error 400). Un segundo Set limpia el payload antes de Slack.
+
+### Flujo
+`Gmail Trigger → IF auto-reply → Normalizar entrada → Memoria (Airtable) → AI Agent → Limpiar payload → Buscar contacto (HubSpot) → ¿Existe? → Crear/Actualizar → Crear borrador (Gmail) → Set → Avisar al equipo (Slack)`
+
+### Entregable
+- `checkpoint4_joaquin_peralta.json` — importable en n8n sin errores.
+
 *Autor: Joaquín Peralta — Coderhouse, Comisión #97320*
